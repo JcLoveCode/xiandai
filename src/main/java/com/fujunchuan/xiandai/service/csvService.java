@@ -1,8 +1,11 @@
 package com.fujunchuan.xiandai.service;
 
-import com.fujunchuan.xiandai.pojo.dataDto;
-import com.github.crab2died.ExcelUtils;
-import org.apache.commons.lang3.StringUtils;
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.ExcelWriter;
+import com.alibaba.excel.write.metadata.WriteSheet;
+import com.alibaba.excel.write.metadata.fill.FillConfig;
+import com.fujunchuan.xiandai.pojo.ceshiDto;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -10,7 +13,6 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,6 +21,7 @@ public class csvService {
 
     public static void main(String[] args) {
         //第一步：先获取csv文件的路径，通过BufferedReader类去读该路径中的文件
+
         File csv = new File("D:\\360MoveData\\Users\\Administrator\\Desktop\\j.csv");
         String tempPath = "D:/b.xlsx";
         try {
@@ -73,15 +76,21 @@ public class csvService {
             System.out.println(type2Data.toString());
             textFile.close();
             textFile2.close();
-            //ExcelUtils.getInstance().exportObjects2Excel(list, Student2.class, true, "sheet0", true, "D:/D.xlsx");
-            HashMap<String, String> data = new HashMap<>();
-            data.put("info","PC");
-            List list = new ArrayList<>();
-            list.add(new dataDto("2020-7-30 17:49:40", "1", "1", "1", "1"));
-            list.add(new dataDto("2020-7-30 17:50:13", "2", "2", "2", "2"));
-            ExcelUtils.getInstance().exportObjects2Excel(tempPath, 0, list, data, dataDto.class, true, "D:/A.xlsx");
+            //这个easypoi有BUG!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            String templateFileName = "E:\\data\\Desktop\\normal_template.xlsx";
+            String outFileName = "E:\\data\\Desktop\\result2.xlsx";
+            ExcelWriter excelWriter = EasyExcel.write(outFileName).withTemplate(templateFileName).build();
+            WriteSheet writeSheet = EasyExcel.writerSheet().build();
+            FillConfig fillConfig = FillConfig.builder().forceNewRow(Boolean.FALSE).build();
+            ArrayList<ceshiDto> ceshiDtos = new ArrayList<>();
+            ceshiDtos.add(new ceshiDto("1", "1", "1", "1"));
+            ceshiDtos.add(new ceshiDto("2", "2", "2", "2"));
+            ceshiDtos.add(new ceshiDto("3", "3", "3", "3"));
+            ceshiDtos.add(new ceshiDto("4", "4", "4", "4"));
+            excelWriter.fill(ceshiDtos, fillConfig, writeSheet);
+            //TODO sheet页重新命名与移动
 
-
+            excelWriter.finish();
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -101,4 +110,5 @@ public class csvService {
         }
         return flag;
     }
+
 }
